@@ -18,5 +18,5 @@ COPY --from=build /app/lib ./lib
 COPY --from=build /app/scripts ./scripts
 RUN mkdir -p /data && chown -R node:node /data /app/.next && chown node:node /app
 USER node
-EXPOSE 3005
-CMD ["npm", "start", "--", "--hostname", "0.0.0.0", "--port", "3005"]
+EXPOSE 3008
+CMD ["npm", "start", "--", "--hostname", "0.0.0.0", "--port", "3008"]

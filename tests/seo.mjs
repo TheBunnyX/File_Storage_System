@@ -8,7 +8,7 @@ import path from 'node:path';
 const require=await serverRuntime(),{seoConfiguration,productMetadata}=require('./seo.js');
 let checks=0;const check=(value,label)=>{assert.ok(value,label);checks++};
 const configured={NODE_ENV:'production',SEO_INDEXING_ENABLED:'true'};
-for(const SITE_URL of ['', 'not-a-url','http://127.0.0.1:3005','https://192.168.1.13','https://localhost','https://files.internal','https://example.com','https://user:secret@nexafile.company'])check(!seoConfiguration({...configured,SITE_URL}).indexable,'Unsafe or placeholder domain stays noindex');
+for(const SITE_URL of ['', 'not-a-url','http://127.0.0.1:3008','https://192.168.1.13','https://localhost','https://files.internal','https://example.com','https://user:secret@nexafile.company'])check(!seoConfiguration({...configured,SITE_URL}).indexable,'Unsafe or placeholder domain stays noindex');
 check(!seoConfiguration({SITE_URL:'https://nexafile.company',SEO_INDEXING_ENABLED:'true',NODE_ENV:'development'}).indexable,'Development stays noindex');
 check(!seoConfiguration({SITE_URL:'https://nexafile.company',NODE_ENV:'production'}).indexable,'Indexing requires explicit opt-in');
 check(seoConfiguration({...configured,SITE_URL:'https://nexafile.company/path?value=1'}).site.href==='https://nexafile.company/','Canonical origin removes paths and query parameters');

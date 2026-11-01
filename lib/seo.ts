@@ -16,7 +16,7 @@ export const siteMetadata: Metadata = {
   title:{default:'NexaFile — Your files, beautifully organized',template:'%s | NexaFile'},
   description:'A private file workspace with team sharing, document search, and version history.',
   applicationName:'NexaFile',
-  metadataBase:seoConfiguration().site || new URL('http://127.0.0.1:3005'),
+  metadataBase:seoConfiguration().site || new URL('http://127.0.0.1:3008'),
   robots:privateRobots,
   openGraph:{type:'website',siteName:'NexaFile',title:'NexaFile',description:'Organize, share, and find your documents in one workspace.',images:[{url:'/opengraph-image',width:1200,height:630,alt:'NexaFile — Your private document workspace'}]},
   twitter:{card:'summary_large_image',title:'NexaFile',description:'Your private document workspace.',images:['/opengraph-image']},

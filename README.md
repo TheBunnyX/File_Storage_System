@@ -140,16 +140,16 @@ If you are migrating existing SQLite data, follow [Migrating existing data](#mig
 ### 4. Start the application
 
 ```sh
-npm run dev -- --hostname 127.0.0.1 --port 3005
+npm run dev -- --hostname 127.0.0.1 --port 3008
 ```
 
-Open [http://127.0.0.1:3005](http://127.0.0.1:3005) and create an account, or select a demo account when demo mode is enabled.
+Open [http://127.0.0.1:3008](http://127.0.0.1:3008) and create an account, or select a demo account when demo mode is enabled.
 
 For production:
 
 ```sh
 npm run build
-npm start -- --hostname 127.0.0.1 --port 3005
+npm start -- --hostname 127.0.0.1 --port 3008
 ```
 
 When using a reverse proxy, set `APP_URL` to the website's actual public origin. See [DEPLOYMENT.md](DEPLOYMENT.md) for deployment details, including Dokploy (`docker-compose.dokploy.yml`) and moving existing data with `npm run data:export` / `data:import`.
@@ -161,7 +161,7 @@ Store server settings in `.env.local`, which is excluded from Git. Do not use th
 ### MySQL / Redis / S3
 
 ```dotenv
-APP_URL=http://127.0.0.1:3005
+APP_URL=http://127.0.0.1:3008
 
 DATABASE_BACKEND=mysql
 MYSQL_HOST=127.0.0.1

@@ -98,9 +98,9 @@ services:
       clamav:
         condition: service_healthy
     ports:
-      - "${APP_PORT:-3005}:3005"
+      - "${APP_PORT:-3008}:3008"
     environment:
-      APP_URL: ${APP_URL:-http://localhost:3005}
+      APP_URL: ${APP_URL:-http://localhost:3008}
       NEXAFILE_QUOTA_MB: ${NEXAFILE_QUOTA_MB:-1024}
       NEXAFILE_MAX_UPLOAD_MB: ${NEXAFILE_MAX_UPLOAD_MB:-50}
       NEXAFILE_TRASH_RETENTION_DAYS: ${NEXAFILE_TRASH_RETENTION_DAYS:-30}

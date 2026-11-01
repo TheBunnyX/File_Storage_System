@@ -1,11 +1,11 @@
 # Dokploy deployment
 
-`docker-compose.dokploy.yml` runs the same self-contained stack (app, MySQL, Redis, SeaweedFS, ClamAV) on Dokploy. It publishes only the app (`APP_PORT`, default 3005, for access by server IP before a domain exists), mounts no files from the repository (Dokploy re-clones it on every deploy) and sets no `container_name`.
+`docker-compose.dokploy.yml` runs the same self-contained stack (app, MySQL, Redis, SeaweedFS, ClamAV) on Dokploy. It publishes only the app (`APP_PORT`, default 3008, for access by server IP before a domain exists), mounts no files from the repository (Dokploy re-clones it on every deploy) and sets no `container_name`.
 
 1. Push this project to a Git repository. Never commit `.env`, `.env.local` or export archives (they are git-ignored).
 2. In Dokploy create a **Compose** service from that repository and set **Compose Path** to `./docker-compose.dokploy.yml`.
-3. **Environment** tab: paste `.env.dokploy.example` and replace every `CHANGE_ME` with a long random value. Set `APP_URL` to the exact address people open: `http://<server-ip>:3005` without a domain, or `https://…` with one; any other origin makes every change fail with 403. Set `NEXAFILE_ADMIN_EMAILS` to the real admin's email, keep `NEXAFILE_DEMO_FULL_ADMIN=false` on a reachable site, and see the demo-account note below before changing `NEXAFILE_DEMO`.
-4. Optional, **Domains** tab: add the domain for service `app`, container port `3005`, with HTTPS (then change `APP_URL` to it and redeploy). Without a domain, open `http://<server-ip>:3005` (allow the port in the host firewall). Dokploy adds Traefik and `dokploy-network` itself.
+3. **Environment** tab: paste `.env.dokploy.example` and replace every `CHANGE_ME` with a long random value. Set `APP_URL` to the exact address people open: `http://<server-ip>:3008` without a domain, or `https://…` with one; any other origin makes every change fail with 403. Set `NEXAFILE_ADMIN_EMAILS` to the real admin's email, keep `NEXAFILE_DEMO_FULL_ADMIN=false` on a reachable site, and see the demo-account note below before changing `NEXAFILE_DEMO`.
+4. Optional, **Domains** tab: add the domain for service `app`, container port `3008`, with HTTPS (then change `APP_URL` to it and redeploy). Without a domain, open `http://<server-ip>:3008` (allow the port in the host firewall). Dokploy adds Traefik and `dokploy-network` itself.
 5. Deploy. The first start waits for ClamAV to load signatures (about a minute). Plan on 4 GB RAM or more for the host: ClamAV needs 1.5–3 GB and the Next.js build is heavy.
 
 Data lives in the named volumes `mysql-data`, `redis-data`, `seaweedfs-data`, `app-data` (holds `server.key`, which encrypts 2FA secrets) and `clamav-data`. Do not delete them; back them up with Dokploy's Volume Backups or the in-app Backups page.
@@ -38,7 +38,7 @@ The import refuses to run when the destination already has files or non-demo mem
 
 # Docker deployment (self-contained)
 
-The whole system runs in Docker: the app, MySQL, Redis and SeaweedFS (S3). Nothing connects to hosts outside Docker. Only the app publishes a port (default 3005); the data services sit on an internal-only network.
+The whole system runs in Docker: the app, MySQL, Redis and SeaweedFS (S3). Nothing connects to hosts outside Docker. Only the app publishes a port (default 3008); the data services sit on an internal-only network.
 
 ```sh
 cp .env.docker.example .env      # then replace every CHANGE_ME with a long random value
@@ -46,7 +46,7 @@ docker compose up -d --build
 docker compose exec app npm run services:check
 ```
 
-Open http://localhost:3005 and register the first account. Set `APP_URL` in `.env` to the exact public origin if you put an HTTPS reverse proxy in front (and `APP_PORT` to change the published port). The `.env` file holds all secrets and is git-ignored.
+Open http://localhost:3008 and register the first account. Set `APP_URL` in `.env` to the exact public origin if you put an HTTPS reverse proxy in front (and `APP_PORT` to change the published port). The `.env` file holds all secrets and is git-ignored.
 
 Data lives in the named volumes `mysql-data`, `redis-data`, `seaweedfs-data` and `app-data` (the last holds `server.key`, which encrypts 2FA secrets). `docker compose down` keeps them; `docker compose down -v` deletes everything. Run operational scripts inside the container, e.g. `docker compose exec app npm run backup` or `docker compose exec app npm run admin -- grant EMAIL`. Backups are written to the SeaweedFS bucket on the same host, so copy them off the machine for real disaster recovery.
 
@@ -57,11 +57,11 @@ Two more containers make every feature work without the internet:
 - **Password resets:** there is no email service. A Super Admin, or a Department Admin for members of their department, opens Admin → Members → Edit → Reset password, sets a new password (optionally turning off 2FA) and gives it to the member privately. The member is signed out of all devices.
 - **Antivirus (ClamAV):** every upload is scanned and `ANTIVIRUS_REQUIRED=true`, so uploads fail with 503 while ClamAV is still loading signatures (about a minute after start, roughly 1.5 GB RAM). Signatures are frozen at image build time because the stack has no internet access; rebuild with `docker compose pull clamav` on a connected machine to refresh them.
 
-Open the app only at the exact `APP_URL` origin (default http://localhost:3005); `127.0.0.1` or a LAN IP makes mutations fail origin validation. The `appuser` MySQL account can also create `file_management*` databases, which `services:restore` and `test:services` need. On a volume created before this grant existed, run `docker compose exec mysql sh /docker-entrypoint-initdb.d/10-grants.sh` once.
+Open the app only at the exact `APP_URL` origin (default http://localhost:3008); `127.0.0.1` or a LAN IP makes mutations fail origin validation. The `appuser` MySQL account can also create `file_management*` databases, which `services:restore` and `test:services` need. On a volume created before this grant existed, run `docker compose exec mysql sh /docker-entrypoint-initdb.d/10-grants.sh` once.
 
 ## Local development against the Docker stack
 
-`docker-compose.dev.yml` publishes the data services on 127.0.0.1 only (MySQL 3316, Redis 6390, SeaweedFS S3 8343, ClamAV 3310) so `npm run dev` (port 3008) and the app container (port 3005) share the same data. Add `COMPOSE_PATH_SEPARATOR=:` and `COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml` to `.env` (see `.env.docker.example`) so plain `docker compose` commands include it, and point `.env.local` at those ports with the passwords and S3 keys from `.env` (see `.env.example`). Never use this override on a server. The earlier LAN servers (192.168.1.13/14) are no longer used; their data was moved into this stack with `data:export` / `data:import`.
+`docker-compose.dev.yml` publishes the data services on 127.0.0.1 only (MySQL 3316, Redis 6390, SeaweedFS S3 8343, ClamAV 3310) so `npm run dev` and the app container share the same data. Both use port 3008, so run only one of them at a time (`docker compose stop app` before `npm run dev`). Add `COMPOSE_PATH_SEPARATOR=:` and `COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml` to `.env` (see `.env.docker.example`) so plain `docker compose` commands include it, and point `.env.local` at those ports with the passwords and S3 keys from `.env` (see `.env.example`). Never use this override on a server. The earlier LAN servers (192.168.1.13/14) are no longer used; their data was moved into this stack with `data:export` / `data:import`.
 
 # MySQL / Redis / SeaweedFS configuration
 
@@ -69,7 +69,7 @@ The app uses MySQL (database file_management), Redis and SeaweedFS S3 (bucket ba
 
 Set DATABASE_BACKEND=mysql, REDIS_ENABLED=true and BLOB_BACKEND=s3, then populate the connection variables from .env.example. These modes do not silently fall back to local storage if an external service is unavailable. Redis database IDs are numeric: REDIS_DB=0 and REDIS_PREFIX=file_management: implement the requested application namespace.
 
-Run npm ci (including tooling dependencies for operational scripts). Run npm run dev -- --hostname 127.0.0.1 --port 3005 for local use. For production, build first and run npm start -- --hostname 127.0.0.1 --port 3005 behind your configured reverse proxy. Set APP_URL to the exact public origin when using a proxy.
+Run npm ci (including tooling dependencies for operational scripts). Run npm run dev -- --hostname 127.0.0.1 --port 3008 for local use. For production, build first and run npm start -- --hostname 127.0.0.1 --port 3008 behind your configured reverse proxy. Set APP_URL to the exact public origin when using a proxy.
 
 ## Data and sessions
 

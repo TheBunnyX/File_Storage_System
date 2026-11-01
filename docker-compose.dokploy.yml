@@ -1,5 +1,5 @@
 # Dokploy (Compose type, Compose Path: ./docker-compose.dokploy.yml). Same self-contained stack as docker-compose.yml, but:
-# - only the app is published (APP_PORT, for http://<server-ip>:3005); for a domain, add it for service "app", port 3005,
+# - only the app is published (APP_PORT, for http://<server-ip>:3008); for a domain, add it for service "app", port 3008,
 #   in Dokploy's Domains tab (Traefik + dokploy-network are added by Dokploy) and set APP_URL to it;
 # - no bind mounts from the repo (Dokploy re-clones it on every deploy), so the SeaweedFS config and MySQL grants are inline;
 # - no container_name (breaks Dokploy logs/metrics).
@@ -120,10 +120,10 @@ services:
       clamav:
         condition: service_healthy
     expose:
-      - "3005"
+      - "3008"
     # Direct access at http://<server-ip>:${APP_PORT} (no domain yet). Keep APP_URL equal to that address.
     ports:
-      - "${APP_PORT:-3005}:3005"
+      - "${APP_PORT:-3008}:3008"
     environment:
       # Exact public origin, e.g. https://files.example.com. Any other origin makes every change fail with 403.
       APP_URL: ${APP_URL:?set in Dokploy Environment}
