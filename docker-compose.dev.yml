@@ -1,0 +1,22 @@
+# Local development only: lets `npm run dev` on this machine use the Docker data services.
+# Ports bind to 127.0.0.1 only. Containers on an internal-only network cannot publish ports,
+# so the data services also join "devhost". Do not use this file on a server.
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+# (or set COMPOSE_FILE in .env, see .env.docker.example)
+
+services:
+  mysql:
+    ports: ["127.0.0.1:${DEV_MYSQL_PORT:-3316}:3306"]
+    networks: [internal, devhost]
+  redis:
+    ports: ["127.0.0.1:${DEV_REDIS_PORT:-6390}:6379"]
+    networks: [internal, devhost]
+  seaweedfs:
+    ports: ["127.0.0.1:${DEV_S3_PORT:-8343}:8333"]
+    networks: [internal, devhost]
+  clamav:
+    ports: ["127.0.0.1:${DEV_CLAMAV_PORT:-3310}:3310"]
+    networks: [internal, devhost]
+
+networks:
+  devhost:

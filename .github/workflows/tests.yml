@@ -1,0 +1,27 @@
+name: Automated checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run test:all
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+          NEXAFILE_BACKUPS: 'off'
+          SITE_URL: ''
+          SEO_INDEXING_ENABLED: 'false'
+          CLAMAV_HOST: ''
+          CLAMAV_SOCKET: ''
+          ANTIVIRUS_REQUIRED: 'false'

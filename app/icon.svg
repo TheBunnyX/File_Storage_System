@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="tile" x1="9" y1="3" x2="55" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4C9BFF"/>
+      <stop offset=".52" stop-color="#2279FF"/>
+      <stop offset="1" stop-color="#0756DF"/>
+    </linearGradient>
+    <linearGradient id="folder" x1="20" y1="25" x2="42" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EAF3FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#tile)"/>
+  <rect x="1" y="1" width="62" height="62" rx="15" stroke="#FFFFFF" stroke-opacity=".2"/>
+  <path d="M13 27V23C13 20.79 14.79 19 17 19H26.25C27.31 19 28.33 19.42 29.08 20.17L33 24.09H42C44.21 24.09 46 25.88 46 28.09V30H13V27Z" fill="#FFFFFF" fill-opacity=".56"/>
+  <path d="M13 28.5C13 26.57 14.57 25 16.5 25H47.5C49.76 25 51.42 27.12 50.88 29.31L47.03 45.06C46.6 46.79 45.05 48 43.27 48H16.88C14.74 48 13 46.26 13 44.12V28.5Z" fill="url(#folder)"/>
+  <path d="M32 30.5L34.37 36.13L40 38.5L34.37 40.87L32 46.5L29.63 40.87L24 38.5L29.63 36.13L32 30.5Z" fill="#2478F5"/>
+  <path d="M47 9.5L49.19 14.81L54.5 17L49.19 19.19L47 24.5L44.81 19.19L39.5 17L44.81 14.81L47 9.5Z" fill="#FFFFFF"/>
+</svg>

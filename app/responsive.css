@@ -1,0 +1,149 @@
+/* Responsive and layout corrections. Loaded after the other stylesheets. */
+
+/* Folder colours (lib/types.ts FOLDER_COLORS). Folders without a known colour are yellow. */
+.folder-shape { --folder-a: #ffe7a0; --folder-b: #ffc96c; --folder-tab: #ffdf92; background: linear-gradient(135deg, var(--folder-a), var(--folder-b)); }
+.folder-shape:before { background: var(--folder-tab); }
+.folder-shape.yellow, .folder-color-swatch.yellow { --folder-a: #ffe7a0; --folder-b: #ffc96c; --folder-tab: #ffdf92; }
+.folder-shape.orange, .folder-color-swatch.orange { --folder-a: #ffd3a8; --folder-b: #ffa95e; --folder-tab: #ffc794; }
+.folder-shape.red, .folder-color-swatch.red { --folder-a: #ffbcb6; --folder-b: #f47b72; --folder-tab: #ffa9a2; }
+.folder-shape.pink, .folder-color-swatch.pink { --folder-a: #ffceda; --folder-b: #ff9fb4; --folder-tab: #ffb9cb; }
+.folder-shape.purple, .folder-color-swatch.purple { --folder-a: #e6d9ff; --folder-b: #c5a7fa; --folder-tab: #ddccff; }
+.folder-shape.blue, .folder-color-swatch.blue { --folder-a: #a1caff; --folder-b: #5ba7ff; --folder-tab: #a1caff; }
+.folder-shape.teal, .folder-color-swatch.teal { --folder-a: #a6e8ea; --folder-b: #4fc5cb; --folder-tab: #93e0e3; }
+.folder-shape.green, .folder-color-swatch.green { --folder-a: #a9e6c8; --folder-b: #76cba5; --folder-tab: #9edfc0; }
+.folder-shape.gray, .folder-color-swatch.gray { --folder-a: #dfe4ec; --folder-b: #aab4c3; --folder-tab: #d2d8e2; }
+
+/* Dashboard shortcuts (Content Search, Duplicate Detection) as icon buttons beside the greeting. */
+.welcome-and-tools { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; min-width: 0; }
+.welcome-and-tools .welcome { min-width: 0; }
+.feature-icons { display: flex; gap: 10px; flex-shrink: 0; padding-top: 26px; }
+.feature-icon-button { position: relative; width: 46px; height: 46px; padding: 0; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; transition: border-color .15s ease, background-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+.feature-icon-button .feature-icon { margin: 0; width: 34px; height: 34px; }
+.feature-icon-button:hover { border-color: #afccff; background: #f9fbff; transform: translateY(-1px); box-shadow: 0 5px 15px #3156a112; }
+.feature-icon-button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.feature-badge { position: absolute; top: -6px; right: -6px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--purple); color: #fff; font-size: 11px; font-weight: 700; line-height: 19px; text-align: center; box-shadow: 0 0 0 2px #fff; }
+.compact-dashboard .feature-icons { display: none; }
+html[data-theme=dark] .feature-icon-button { background: #172235; border-color: #2b3a52; }
+html[data-theme=dark] .feature-icon-button:hover { background: #1e2d45; border-color: #4a6a96; }
+html[data-theme=dark] .feature-badge { box-shadow: 0 0 0 2px #111a29; }
+@media (max-width: 700px) { .feature-icons { padding-top: 20px; gap: 8px; } .feature-icon-button { width: 42px; height: 42px; } }
+
+/* Filter chips keep their natural width and scroll sideways instead of being clipped. */
+.filter-row button { flex: 0 0 auto; white-space: nowrap; }
+
+/* Footer hint was 7-9px; keep it legible at every width. */
+.file-footer, .file-footer > span:first-child { font-size: 12px; }
+
+/* Text previews sat under the open/expand buttons in the corner. */
+.preview-container > :first-child { padding-top: 44px; box-sizing: border-box; }
+
+/* Account picker used by Manage sharing. */
+.account-picker { position: relative; display: block; }
+.account-picker > input { width: 100%; }
+.account-picker-list { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px; list-style: none; max-height: 240px; overflow-y: auto; background: var(--surface, #fff); border: 1px solid #dfe7f4; border-radius: 10px; box-shadow: 0 10px 28px #1b315722; }
+.account-picker-list li { display: flex; flex-direction: column; gap: 2px; padding: 9px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #1b3157; }
+.account-picker-list li strong { font-weight: 600; font-size: 13px; }
+.account-picker-list li small { font-size: 12px; color: #7a889e; }
+.account-picker-list li:hover, .account-picker-list li.active { background: #eaf2ff; }
+.account-picker-list .account-picker-note { flex-direction: row; align-items: center; gap: 8px; cursor: default; color: #7a889e; }
+.account-picker-list .account-picker-note:hover { background: transparent; }
+:root[data-theme="dark"] .account-picker-list { background: #1a273a; border-color: #31435e; box-shadow: 0 10px 28px #00000066; }
+:root[data-theme="dark"] .account-picker-list li { color: #dce6f8; }
+:root[data-theme="dark"] .account-picker-list li:hover, :root[data-theme="dark"] .account-picker-list li.active { background: #243f64; }
+
+/* Keep the page itself from scrolling sideways on narrow screens. */
+.main-shell, .main-content, .content-layout { min-width: 0; }
+
+@media (max-width: 700px) {
+  .filter-row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  /* Larger touch targets for the main file actions. */
+  .file-name, .folder-open, .text-button, .icon-button { min-height: 40px; }
+  .topbar-actions { gap: 6px; }
+}
+
+
+
+/* Collapsible sidebar: the header button collapses it on desktop and opens a drawer on tablet/mobile. */
+.topbar .sidebar-toggle { display: inline-flex; flex-shrink: 0; margin: 0; transition: background-color .2s ease, color .2s ease, transform .1s ease; }
+.topbar .sidebar-toggle:active { background: #e1ebff; color: var(--blue); transform: scale(.94); }
+html[data-theme=dark] .topbar .sidebar-toggle { color: #9fb3cf; }
+html[data-theme=dark] .topbar .sidebar-toggle:hover { background: #1f3557; color: #e0e8fa; }
+html[data-theme=dark] .topbar .sidebar-toggle:active { background: #24406a; color: #e0e8fa; }
+.workspace .sidebar { transition: transform .25s ease, box-shadow .25s ease; }
+.workspace .main-shell { transition: margin-left .25s ease, width .25s ease; }
+
+@media (min-width: 1025px) {
+  .workspace.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+  .workspace.sidebar-collapsed .main-shell { margin-left: 0; width: 100%; }
+}
+
+@media (max-width: 1024px) {
+  :root { --sidebar: 0px; }
+  .workspace .sidebar { width: 235px; max-width: 85vw; transform: translateX(-100%); }
+  .workspace .sidebar.mobile-open { transform: translateX(0); box-shadow: 0 10px 60px #1b2f5933; }
+  .sidebar-scrim { display: block; position: fixed; inset: 0; z-index: 29; border: 0; padding: 0; background: #15244250; backdrop-filter: blur(2px); animation: sidebar-scrim-in .25s ease; }
+}
+
+@media (max-width: 700px) {
+  .topbar .sidebar-toggle { padding: 4px; }
+}
+
+@keyframes sidebar-scrim-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* File detail panel: "More file actions" is one full-width button that opens the action menu. */
+.suggested-actions > div:has(> .file-actions-button) { grid-template-columns: minmax(0, 1fr); }
+.suggested-actions .file-actions-button { flex-direction: row; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 10px 14px; font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--ink); cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
+.suggested-actions .file-actions-button > svg:first-child { color: var(--blue); flex-shrink: 0; }
+.suggested-actions .file-actions-button > span { flex: 1; min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.suggested-actions .file-actions-chevron { color: #8591ab; flex-shrink: 0; }
+.suggested-actions .file-actions-button:active { background: #edf3ff; }
+html[data-theme=dark] .suggested-actions .file-actions-button > svg:first-child { color: #7fb0ff; }
+html[data-theme=dark] .suggested-actions .file-actions-button:hover { border-color: #4a6a96 !important; background: #233a58 !important; }
+
+/* Folder colour picker (new folder dialog and folder menu). */
+.folder-color-field { display: grid; gap: 8px; margin: 4px 0 14px; }
+.folder-color-field > span { font-size: 12px; font-weight: 600; color: var(--ink); }
+.folder-color-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.folder-color-swatch { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; padding: 0; display: grid; place-items: center; cursor: pointer; color: #1d2a44; background: linear-gradient(135deg, var(--folder-a), var(--folder-b)); box-shadow: inset 0 0 0 1px #0000000f; transition: transform .12s ease, border-color .12s ease; }
+.folder-color-swatch:hover:not(:disabled) { transform: scale(1.08); }
+.folder-color-swatch[aria-checked="true"] { border-color: var(--blue); box-shadow: 0 0 0 2px #fff inset; }
+.folder-color-swatch:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.folder-color-swatch:disabled { cursor: default; opacity: .6; }
+html[data-theme=dark] .folder-color-swatch[aria-checked="true"] { border-color: #7fb0ff; box-shadow: 0 0 0 2px #111a29 inset; }
+
+/* Storage moved from a dashboard card to a shortcut icon; the welcome row takes the full width. */
+.dashboard-top { grid-template-columns: minmax(0, 1fr); }
+.feature-meter { position: absolute; left: 8px; right: 8px; bottom: 5px; height: 3px; border-radius: 2px; background: #e6ecf5; overflow: hidden; }
+.feature-meter i { display: block; height: 100%; border-radius: inherit; background: #22b888; }
+.feature-meter.warning i, .storage-summary.warning .storage-meter i { background: #f0a020; }
+.feature-meter.full i, .storage-summary.full .storage-meter i { background: #e5484d; }
+html[data-theme=dark] .feature-meter { background: #2b3a52; }
+
+/* Storage overview dialog. */
+.storage-summary { border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.storage-summary-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.storage-summary-head strong { display: block; font-size: 24px; font-weight: 700; line-height: 1.2; color: var(--ink); }
+.storage-summary-head span { font-size: 13px; color: var(--muted); }
+.storage-free { text-align: right; }
+.storage-free strong { font-size: 16px; }
+.storage-meter { height: 10px; border-radius: 5px; background: #e6ecf5; overflow: hidden; margin: 12px 0 10px; }
+.storage-meter i { display: block; height: 100%; min-width: 4px; border-radius: inherit; background: #22b888; }
+.storage-status { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: #13865d; }
+.storage-summary.warning .storage-status { color: #b26b00; }
+.storage-summary.full .storage-status { color: #c4282e; }
+.storage-status svg { flex-shrink: 0; }
+.storage-heading { font-size: 14px; font-weight: 650; margin: 16px 0 8px; color: var(--ink); }
+.storage-list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; }
+.storage-list li { display: grid; grid-template-columns: 10px minmax(90px, auto) minmax(40px, 1fr) auto; align-items: center; gap: 10px; font-size: 13px; }
+.storage-dot { width: 10px; height: 10px; border-radius: 50%; }
+.storage-name { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.storage-bar { height: 6px; border-radius: 3px; background: #eef2f8; overflow: hidden; }
+.storage-bar i { display: block; height: 100%; min-width: 2px; border-radius: inherit; }
+.storage-list strong { font-weight: 600; text-align: right; }
+html[data-theme=dark] .storage-meter, html[data-theme=dark] .storage-bar { background: #2b3a52; }
+html[data-theme=dark] .storage-status { color: #4fd1a1; }
+html[data-theme=dark] .storage-summary.warning .storage-status { color: #f5b748; }
+html[data-theme=dark] .storage-summary.full .storage-status { color: #ff7b80; }
+@media (max-width: 420px) { .storage-list li { grid-template-columns: 10px minmax(0, 1fr) auto; } .storage-bar { display: none; } }

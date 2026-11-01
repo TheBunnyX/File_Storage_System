@@ -1,0 +1,23 @@
+node_modules/
+.npm-cache/
+.next/
+out/
+*.tsbuildinfo
+.env*.local
+data/
+data-backups/
+.test-data/
+.env
+
+# Data export archives (contain every file and account)
+nexafile-export-*.zip
+
+# Local-only files (screenshots, logs, editor settings, scratch scripts)
+/*.png
+/*.jpg
+*.log
+.fc.tmp.cjs
+.vscode/
+
+# Filled-in Dokploy environment (contains secrets); commit only .env.dokploy.example
+.env.dokploy

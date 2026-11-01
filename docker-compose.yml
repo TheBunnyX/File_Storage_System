@@ -1,0 +1,146 @@
+# Fully self-contained stack: nothing here connects to hosts outside Docker.
+# Only the app publishes a port; MySQL, Redis and SeaweedFS stay on the internal network.
+name: nexafile
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in .env}
+      MYSQL_DATABASE: file_management
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set in .env}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql-init.sh:/docker-entrypoint-initdb.d/10-grants.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [internal]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?set in .env}", "--appendonly", "yes"]
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?set in .env}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?set in .env}
+    volumes:
+      - ./docker/seaweedfs-entrypoint.sh:/entrypoint.sh:ro
+      - seaweedfs-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://127.0.0.1:8333/"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks: [internal]
+
+  seaweedfs-init:
+    image: amazon/aws-cli:2.17.0
+    restart: "no"
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c", "aws --endpoint-url http://seaweedfs:8333 s3api head-bucket --bucket backups 2>/dev/null || aws --endpoint-url http://seaweedfs:8333 s3 mb s3://backups"]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: us-east-1
+    networks: [internal]
+
+  clamav:
+    # Signatures are bundled in the image and frozen at build time (no internet updates).
+    image: clamav/clamav:1.4
+    restart: unless-stopped
+    environment:
+      CLAMAV_NO_FRESHCLAMD: "true"
+      # Must exceed NEXAFILE_MAX_UPLOAD_MB (50) or larger scans fail with 503.
+      CLAMD_CONF_StreamMaxLength: 100M
+      CLAMD_CONF_MaxFileSize: 100M
+    volumes:
+      - clamav-data:/var/lib/clamav
+    healthcheck:
+      test: ["CMD-SHELL", "clamdcheck.sh"]
+      interval: 15s
+      timeout: 10s
+      retries: 40
+      start_period: 60s
+    networks: [internal]
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      seaweedfs-init:
+        condition: service_completed_successfully
+      clamav:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-3005}:3005"
+    environment:
+      APP_URL: ${APP_URL:-http://localhost:3005}
+      NEXAFILE_QUOTA_MB: ${NEXAFILE_QUOTA_MB:-1024}
+      NEXAFILE_MAX_UPLOAD_MB: ${NEXAFILE_MAX_UPLOAD_MB:-50}
+      NEXAFILE_TRASH_RETENTION_DAYS: ${NEXAFILE_TRASH_RETENTION_DAYS:-30}
+      NEXAFILE_DEMO: ${NEXAFILE_DEMO:-true}
+      DATABASE_BACKEND: mysql
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: file_management
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_ENABLED: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_USERNAME: default
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: "0"
+      REDIS_PREFIX: "file_management:"
+      BLOB_BACKEND: s3
+      S3_ENDPOINT: http://seaweedfs:8333
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_BUCKET: backups
+      S3_PREFIX: "file_management/"
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: "3310"
+      ANTIVIRUS_REQUIRED: "true"
+    volumes:
+      - app-data:/data
+    networks: [internal, public]
+
+networks:
+  # internal: no outbound/external access for the data services.
+  internal:
+    internal: true
+  public:
+
+volumes:
+  mysql-data:
+  redis-data:
+  seaweedfs-data:
+  app-data:
+  clamav-data:

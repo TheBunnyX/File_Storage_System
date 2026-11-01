@@ -1,0 +1,17 @@
+node_modules
+.next
+.npm-cache
+.test-data
+data
+data-backups
+.git
+.github
+.env
+.env.*
+!.env.example
+*.log
+*.png
+*.jpg
+*.tsbuildinfo
+tests
+*.zip
