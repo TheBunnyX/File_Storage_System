@@ -1,11 +1,11 @@
 # Dokploy deployment
 
-`docker-compose.dokploy.yml` runs the same self-contained stack (app, MySQL, Redis, SeaweedFS, ClamAV) on Dokploy. It publishes no ports, mounts no files from the repository (Dokploy re-clones it on every deploy) and sets no `container_name`.
+`docker-compose.dokploy.yml` runs the same self-contained stack (app, MySQL, Redis, SeaweedFS, ClamAV) on Dokploy. It publishes only the app (`APP_PORT`, default 3005, for access by server IP before a domain exists), mounts no files from the repository (Dokploy re-clones it on every deploy) and sets no `container_name`.
 
 1. Push this project to a Git repository. Never commit `.env`, `.env.local` or export archives (they are git-ignored).
 2. In Dokploy create a **Compose** service from that repository and set **Compose Path** to `./docker-compose.dokploy.yml`.
-3. **Environment** tab: paste `.env.dokploy.example` and replace every `CHANGE_ME` with a long random value. Set `APP_URL` to the exact public URL (`https://…`); any other origin makes every change fail with 403. Set `NEXAFILE_ADMIN_EMAILS` to the real admin's email, keep `NEXAFILE_DEMO_FULL_ADMIN=false` on a reachable site, and see the demo-account note below before changing `NEXAFILE_DEMO`.
-4. **Domains** tab: add the domain for service `app`, container port `3005`, with HTTPS. Dokploy adds Traefik and `dokploy-network` itself.
+3. **Environment** tab: paste `.env.dokploy.example` and replace every `CHANGE_ME` with a long random value. Set `APP_URL` to the exact address people open: `http://<server-ip>:3005` without a domain, or `https://…` with one; any other origin makes every change fail with 403. Set `NEXAFILE_ADMIN_EMAILS` to the real admin's email, keep `NEXAFILE_DEMO_FULL_ADMIN=false` on a reachable site, and see the demo-account note below before changing `NEXAFILE_DEMO`.
+4. Optional, **Domains** tab: add the domain for service `app`, container port `3005`, with HTTPS (then change `APP_URL` to it and redeploy). Without a domain, open `http://<server-ip>:3005` (allow the port in the host firewall). Dokploy adds Traefik and `dokploy-network` itself.
 5. Deploy. The first start waits for ClamAV to load signatures (about a minute). Plan on 4 GB RAM or more for the host: ClamAV needs 1.5–3 GB and the Next.js build is heavy.
 
 Data lives in the named volumes `mysql-data`, `redis-data`, `seaweedfs-data`, `app-data` (holds `server.key`, which encrypts 2FA secrets) and `clamav-data`. Do not delete them; back them up with Dokploy's Volume Backups or the in-app Backups page.
