@@ -18,18 +18,58 @@
 
 NexaFile brings file storage, sharing, version history, and search into one web application. It uses **MySQL** for application data, **Redis** for sessions and rate limits, and **SeaweedFS through the S3 API** for original files and backups.
 
-[Getting started](#getting-started) · [Configuration](#configuration) · [Demo accounts](#demo-accounts) · [Testing](#testing) · [Operations](#operations)
+[Screenshots](#screenshots) · [Quick start with Docker](#quick-start-with-docker) · [Getting started](#getting-started) · [Configuration](#configuration) · [Demo accounts](#demo-accounts) · [Testing](#testing) · [Operations](#operations)
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/workspace.png" alt="NexaFile workspace with colored folders, a file list and dashboard shortcut icons" width="860" />
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/login.png" alt="Sign-in page with demo account choices" /><br /><sub><b>Sign in</b> — email and password, or one-click demo roles.</sub></td>
+    <td width="50%"><img src="docs/screenshots/workspace-dark.png" alt="Workspace in dark mode" /><br /><sub><b>Dark mode</b> — light, dark or follow the system.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/workspace-grid.png" alt="Workspace in grid view" /><br /><sub><b>Grid view</b> — table or grid, with sorting and type filters.</sub></td>
+    <td width="50%"><img src="docs/screenshots/file-details.png" alt="File details panel with preview, overview and tags" /><br /><sub><b>File details</b> — preview, tags, sharing, activity and versions.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/storage.png" alt="Storage overview dialog with a usage bar and breakdown by file type" /><br /><sub><b>Storage overview</b> — used and free space in plain language, with a breakdown by type.</sub></td>
+    <td width="50%"><img src="docs/screenshots/admin.png" alt="Admin console members page" /><br /><sub><b>Admin console</b> — members, departments, quotas, backups and audit log.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/workspace-thai.png" alt="Workspace in Thai" /><br /><sub><b>Thai and English</b> — switch language at any time.</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/mobile.png" alt="Workspace on a phone" width="240" /><br /><sub><b>Mobile</b> — responsive layout with a slide-in menu.</sub></td>
+  </tr>
+</table>
+
+> The screenshots use invented sample files and demo accounts, not real data.
+
+## Quick start with Docker
+
+The fastest way to run everything (app, MySQL, Redis, SeaweedFS S3 and ClamAV) with no external services:
+
+```sh
+cp .env.docker.example .env      # then replace every CHANGE_ME with a long random value
+docker compose up -d --build
+```
+
+Open [http://localhost:3008](http://localhost:3008). The first start waits for ClamAV to load its signatures (about a minute). Set `NEXAFILE_DEMO=true` in `.env` to show the demo accounts on the login page.
+
+To deploy on **Dokploy** from GitHub, create a *Compose* service, set the Compose Path to `./docker-compose.dokploy.yml`, and paste `.env.dokploy.example` into the Environment tab. Existing data can be moved with `npm run data:export` / `npm run data:import`. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Features
 
 ### File management
 
 - Upload multiple files using drag and drop, pause and resume uploads, and verify SHA-256 before saving.
-- Create folders, rename and move files, edit tags, and download multiple files as a ZIP archive.
+- Create folders in nine colors (changeable at any time), rename and move files, edit tags, and download multiple files as a ZIP archive.
 - Preview PDFs, images, video, audio, and extracted text from Office documents.
 - Keep version history, download previous versions, and restore old content as a new version.
 - Use favorites, Trash, recovery, and Undo after moving files to Trash.
-- Detect duplicate content and track storage usage, including previous versions and trashed files.
+- Detect duplicate content and track storage usage, including previous versions and trashed files. Content Search, Duplicate Detection and Storage Usage are one-click icons next to the greeting.
 
 ### Search and collaboration
 
@@ -350,8 +390,11 @@ app/
 └── api/[...path]/route.ts     # Server API
 components/                   # UI, authentication, previews, upload queue, language/themes
 lib/                          # Database, Redis, S3, permissions, backups
-scripts/                      # Service checks, migration, backup, restore, and operations
+scripts/                      # Service checks, migration, backup, restore, data export/import
 tests/                        # Integration, UI, localization, and live service tests
+docs/screenshots/             # Images used in this README
+docker-compose.yml            # Self-contained local/production stack
+docker-compose.dokploy.yml    # Same stack for Dokploy
 .github/workflows/            # GitHub Actions
 .env.example                  # Example settings without live credentials
 DEPLOYMENT.md                 # Deployment and operations guide
