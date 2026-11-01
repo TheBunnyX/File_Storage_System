@@ -123,7 +123,7 @@ services:
       - "3008"
     # Direct access at http://<server-ip>:${APP_PORT} (no domain yet). Keep APP_URL equal to that address.
     ports:
-      - "${APP_PORT:-3008}:3008"
+      - "0.0.0.0:${APP_PORT:-3008}:3008"
     environment:
       # Exact public origin, e.g. https://files.example.com. Any other origin makes every change fail with 403.
       APP_URL: ${APP_URL:?set in Dokploy Environment}
